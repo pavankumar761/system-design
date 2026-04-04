@@ -4,6 +4,9 @@ import org.example.lb.model.BackendServer;
 import org.example.lb.model.ServerPool;
 import org.example.lb.strategy.LoadBalancerStrategy;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.nio.channels.SocketChannel;
 import java.util.List;
 
 /**
@@ -43,5 +46,20 @@ public class RequestRouter {
     private void retry(String request) {
         System.out.println("Retrying request : " + request);
         routeRequest(request);
+    }
+
+    public SocketChannel selectBackendChannel() throws IOException {
+        List<BackendServer> servers = serverPool.getHealthyServers();
+        BackendServer server = strategy.selectServer(servers);
+
+        SocketChannel backend = SocketChannel.open();
+
+        backend.configureBlocking(false);
+        backend.bind(new InetSocketAddress(
+                server.getHost(),
+                server.getPort()
+        ));
+
+        return backend;
     }
 }
