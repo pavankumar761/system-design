@@ -1,4 +1,4 @@
-package org.example;
+package org.example.lb.bootstrap;
 
 import org.example.lb.core.LoadBalancer;
 import org.example.lb.router.RequestRouter;
